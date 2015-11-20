@@ -8,14 +8,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 amax = 1.6;
-v0=2*[0.2;-1.2;0.0];
-ae = [2.2;1.2;0.0];
+v0=0*[0.2;-1.2;0.0];
+ae = 1*[2.2;1.2;0.0];
 aenorm = ae/norm(ae);
 
 qzp = rot2q([0;0;1],+pi/2)
 qzm = rot2q([0;0;1],-pi/2)
-delta = @(x,y) ((x*ae(1)+y*ae(2))**2)-((x*x+y*y))*(ae'*ae - amax*amax)
-omega = @(x,y) (-(x*x+y*y)*(ae'*ae - amax*amax))
 
 dk = -ae'*ae+amax*amax
 L=10;
@@ -23,19 +21,20 @@ N=100;
 X=linspace(-L,L,N);
 Y=linspace(-L,L,N);
 B = zeros(N,N);
+B(1,1)=1.0;
 T = norm(v0)/amax
-for i=1:N
-        for j=1:N
-                for t = 0:0.1:T
-                        p = [X(i);Y(j);0.0]-0.5*ae*t*t-v0*t;
-                        dd = sqrt((p'*p));
-                        if dd <= (0.5*amax*t*t);
-                                B(i,j)=1.0;
-                                break
-                        end
-                end
-        end
-end
+%for i=1:N
+%        for j=1:N
+%                for t = 0:0.1:T
+%                        p = [X(i);Y(j);0.0]-0.5*ae*t*t-v0*t;
+%                        dd = sqrt((p'*p));
+%                        if dd <= (0.5*amax*t*t);
+%                                B(i,j)=1.0;
+%                                break
+%                        end
+%                end
+%        end
+%end
 
 imagesc(X,Y,B);
 hold on;
@@ -46,12 +45,12 @@ hold on;
 plot([0,v0(2)],[0,v0(1)],'g');
 hold on;
 
-t = 0:0.02:10;
+t = 0:0.02:5;
 xlabel('y');
 ylabel('x');
 set(gca,'YDir','normal')
 
-for angle=0:pi/20:2*pi
+for angle=0:pi/100:2*pi
         qz = rot2q([0;0;1],angle);
         aq = quaternion(aenorm(1),aenorm(2),aenorm(3));
         [aoff,tmpangle] = q2rot(qz*aq*conj(qz));
